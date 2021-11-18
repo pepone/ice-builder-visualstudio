@@ -1,10 +1,10 @@
-﻿using NuGet.VisualStudio;
-using Microsoft.VisualStudio.ComponentModelHost;
+﻿using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
+using NuGet.VisualStudio;
 
 namespace IceBuilder
 {
-    public class NuGetI : NuGet
+    public class NuGetI : INuGet
     {
         IVsPackageInstallerEvents PackageInstallerEvents
         {
@@ -76,14 +76,14 @@ namespace IceBuilder
             ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                if(BatchEnd != null)
+                if (BatchEnd != null)
                 {
                     BatchEnd();
                 }
             });
         }
 
-        void NuGet.OnNugetBatchEnd(NuGetBatchEnd batchEnd)
+        void INuGet.OnNugetBatchEnd(NuGetBatchEnd batchEnd)
         {
             BatchEnd = batchEnd;
         }

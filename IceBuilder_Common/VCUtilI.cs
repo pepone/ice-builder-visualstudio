@@ -4,25 +4,45 @@
 //
 // **********************************************************************
 
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.VCProjectEngine;
 using System;
-using System.Collections.Generic;
-using System.IO;
+
+/* Unmerged change from project 'IceBuilder_VS2019'
+Before:
 using System.Linq;
 using Microsoft.VisualStudio.VCProjectEngine;
 using Microsoft.VisualStudio.Shell.Interop;
+After:
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+*/
+
+/* Unmerged change from project 'IceBuilder_VS2015'
+Before:
+using System.Linq;
+using Microsoft.VisualStudio.VCProjectEngine;
+using Microsoft.VisualStudio.Shell.Interop;
+After:
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+*/
+using System.IO;
 
 namespace IceBuilder
 {
-    public class VCUtilI : VCUtil
+    public class VCUtilI : IVCUtil
     {
         public bool SetupSliceFilter(EnvDTE.Project dteProject)
         {
             VCProject project = dteProject.Object as VCProject;
-            foreach(VCFilter f in project.Filters)
+            foreach (VCFilter f in project.Filters)
             {
-                if(f.Name.Equals("Slice Files"))
+                if (f.Name.Equals("Slice Files"))
                 {
-                    if(string.IsNullOrEmpty(f.Filter) || !f.Filter.Equals("ice"))
+                    if (string.IsNullOrEmpty(f.Filter) || !f.Filter.Equals("ice"))
                     {
                         f.Filter = "ice";
                         return true;
@@ -38,9 +58,9 @@ namespace IceBuilder
 
         public VCFilter FindOrCreateFilter(VCFilter parent, string name)
         {
-            foreach(VCFilter f in parent.Filters)
+            foreach (VCFilter f in parent.Filters)
             {
-                if(f.Name.Equals(name))
+                if (f.Name.Equals(name))
                 {
                     return f;
                 }
@@ -50,9 +70,9 @@ namespace IceBuilder
 
         public VCFile FindFile(VCProject project, string name)
         {
-            foreach(VCFile file in project.Files)
+            foreach (VCFile file in project.Files)
             {
-                if(name.Equals(file.RelativePath))
+                if (name.Equals(file.RelativePath))
                 {
                     return file;
                 }
@@ -62,9 +82,9 @@ namespace IceBuilder
 
         public VCFilter FindOrCreateFilter(VCProject parent, string name)
         {
-            foreach(VCFilter f in parent.Filters)
+            foreach (VCFilter f in parent.Filters)
             {
-                if(f.Name.Equals(name))
+                if (f.Name.Equals(name))
                 {
                     return f;
                 }
@@ -86,19 +106,19 @@ namespace IceBuilder
             uint id;
             VSDOCUMENTPRIORITY[] priority = new VSDOCUMENTPRIORITY[1];
             project.IsDocumentInProject(path, out found, priority, out id);
-            if(found == 0)
+            if (found == 0)
             {
-                if(!Directory.Exists(Path.GetDirectoryName(path)))
+                if (!Directory.Exists(Path.GetDirectoryName(path)))
                 {
                     Directory.CreateDirectory(Path.GetDirectoryName(path));
                 }
 
-                if(!File.Exists(path))
+                if (!File.Exists(path))
                 {
                     File.Create(path).Dispose();
                 }
 
-                if(config == null)
+                if (config == null)
                 {
                     filter.AddFile(path);
                 }
@@ -107,9 +127,9 @@ namespace IceBuilder
                     filter = FindOrCreateFilter(filter, config.PlatformName);
                     filter = FindOrCreateFilter(filter, config.ConfigurationName);
                     VCFile file = filter.AddFile(path);
-                    foreach(VCFileConfiguration c in file.FileConfigurations)
+                    foreach (VCFileConfiguration c in file.FileConfigurations)
                     {
-                        if(!c.ProjectConfiguration.ConfigurationName.Equals(config.ConfigurationName) ||
+                        if (!c.ProjectConfiguration.ConfigurationName.Equals(config.ConfigurationName) ||
                            !c.ProjectConfiguration.Platform.Name.Equals(config.PlatformName))
                         {
                             c.ExcludedFromBuild = true;
@@ -124,7 +144,7 @@ namespace IceBuilder
                     //
                     File.Delete(path);
                 }
-                catch(Exception)
+                catch (Exception)
                 {
                 }
             }
@@ -138,7 +158,7 @@ namespace IceBuilder
             parent = FindOrCreateFilter(parent, platform);
             parent = FindOrCreateFilter(parent, configuration);
             var file = FindFile(vcproject, path);
-            if(file != null)
+            if (file != null)
             {
                 file.Move(parent);
             }

@@ -8,7 +8,7 @@ namespace IceBuilder
 {
     public class ProjectHelperFactoryI : IVsProjectHelperFactory
     {
-        public VCUtil VCUtil
+        public IVCUtil VCUtil
         {
             get
             {
@@ -16,7 +16,7 @@ namespace IceBuilder
             }
         }
 
-        public NuGet NuGet
+        public INuGet NuGet
         {
             get
             {

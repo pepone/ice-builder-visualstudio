@@ -64,7 +64,7 @@ namespace IceBuilder
                     {
                         var msproject = project.GetMSBuildProject();
                         msproject.ReevaluateIfNecessary();
-                        if(switchToMainThread)
+                        if (switchToMainThread)
                         {
                             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                         }
@@ -88,7 +88,7 @@ namespace IceBuilder
                     var buildProject = await access.GetProjectAsync(configuredProject);
                     if (buildProject != null)
                     {
-                        if(switchToMainThread)
+                        if (switchToMainThread)
                         {
                             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                         }
@@ -114,7 +114,7 @@ namespace IceBuilder
                     var buildProject = await access.GetProjectAsync(configuredProject);
                     if (buildProject != null)
                     {
-                        if(switchToMainThread)
+                        if (switchToMainThread)
                         {
                             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                         }
@@ -282,7 +282,7 @@ namespace IceBuilder
                 {
                     var items = msproject.Xml.Items.Where(item =>
                         {
-                            if(item.ItemType.Equals("Compile") || item.ItemType.Equals("ClCompile") || item.ItemType.Equals("ClInclude"))
+                            if (item.ItemType.Equals("Compile") || item.ItemType.Equals("ClCompile") || item.ItemType.Equals("ClInclude"))
                             {
                                 return paths.Contains(Path.Combine(projectDir, item.Update));
                             }
@@ -292,7 +292,7 @@ namespace IceBuilder
                             }
                         });
 
-                    foreach(var item in items)
+                    foreach (var item in items)
                     {
                         item.Parent.RemoveChild(item);
                     }
@@ -333,7 +333,7 @@ namespace IceBuilder
                         else
                         {
                             var updateItem = msproject.Xml.Items.FirstOrDefault(i => generated.Equals(i.Update));
-                            if(updateItem == null)
+                            if (updateItem == null)
                             {
                                 updateItem = msproject.Xml.CreateItemElement(item.ItemType);
                                 var group = msproject.Xml.ItemGroups.FirstOrDefault();
@@ -345,7 +345,7 @@ namespace IceBuilder
                                 group.AppendChild(updateItem);
                             }
                             var metadata = updateItem.Metadata.FirstOrDefault(m => m.Name.Equals("SliceCompileSource"));
-                            if(metadata != null)
+                            if (metadata != null)
                             {
                                 metadata.Value = slice;
                             }
@@ -363,16 +363,16 @@ namespace IceBuilder
         {
 #if VS2017 || VS2019
             var unconfiguredProject = GetUnconfiguredProject(project);
-            if(unconfiguredProject != null)
+            if (unconfiguredProject != null)
             {
                 var activeConfiguredProjectSubscription = unconfiguredProject.Services.ActiveConfiguredProjectSubscription;
                 var projectSource = activeConfiguredProjectSubscription.ProjectSource;
 
                 return projectSource.SourceBlock.LinkTo(
-                    new ActionBlock<IProjectVersionedValue<IProjectSnapshot>>( update =>
-                    {
-                        onProjectUpdate();
-                    }));
+                    new ActionBlock<IProjectVersionedValue<IProjectSnapshot>>(update =>
+                   {
+                       onProjectUpdate();
+                   }));
             }
 #endif
             return null;
