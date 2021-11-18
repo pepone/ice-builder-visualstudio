@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.Shell;
 using System.Linq;
 using System.Collections.Generic;
 
-#if VS2017 || VS2019
+#if VS2017 || VS2019 || VS2022
 using System.IO;
 using System.Threading.Tasks.Dataflow;
 #else
@@ -78,7 +78,7 @@ namespace IceBuilder
         WithProjectAsync<T>(UnconfiguredProject unconfiguredProject, Func<MSProject, T> func,
                             bool switchToMainThread = false)
         {
-            T result = default(T);
+            T result = default;
             var service = unconfiguredProject.ProjectService.Services.ProjectLockService;
             if (service != null)
             {
@@ -140,46 +140,28 @@ namespace IceBuilder
                             context = dteproject.Object as IVsBrowseObjectContext;
                         }
                     }
-                    unconfiguredProject = context != null ? context.UnconfiguredProject : null;
+                    unconfiguredProject = context?.UnconfiguredProject;
                 });
             return unconfiguredProject;
         }
 
-        public string GetItemMetadata(IVsProject project, string identity, string name, string defaultValue = "")
-        {
-            return WithProject(project, (MSProject msproject) =>
-                {
-                    return msproject.GetItemMetadata(identity, name, defaultValue);
-                });
-        }
+        public string GetItemMetadata(IVsProject project, string identity, string name, string defaultValue = "") =>
+            WithProject(project, (MSProject msproject) => msproject.GetItemMetadata(identity, name, defaultValue));
 
-        public string GetDefaultItemMetadata(IVsProject project, string name, bool evaluated, string defaultValue = "")
-        {
-            return WithProject(project, (MSProject msproject) =>
-            {
-                return msproject.GetDefaultItemMetadata(name, evaluated, defaultValue);
-            });
-        }
+        public string GetDefaultItemMetadata(IVsProject project, string name, bool evaluated, string defaultValue = "") =>
+            WithProject(project, (MSProject msproject) => msproject.GetDefaultItemMetadata(name, evaluated, defaultValue));
 
-        public void SetItemMetadata(IVsProject project, string itemType, string label, string name, string value)
-        {
-            UpdateProject(project, (MSProject msproject) =>
-                {
-                    msproject.SetItemMetadata(itemType, label, name, value);
-                });
-        }
+        public void SetItemMetadata(IVsProject project, string itemType, string label, string name, string value) =>
+            UpdateProject(project, (MSProject msproject) => msproject.SetItemMetadata(itemType, label, name, value));
 
-        public void SetItemMetadata(IVsProject project, string name, string value)
-        {
-            UpdateProject(project, (MSProject msproject) =>
-                {
-                    msproject.SetItemMetadata("SliceCompile", "IceBuilder", name, value);
-                });
-        }
+        public void SetItemMetadata(IVsProject project, string name, string value) =>
+            UpdateProject(
+                project,
+                (MSProject msproject) => msproject.SetItemMetadata("SliceCompile", "IceBuilder", name, value));
 
         public void AddFromFile(IVsProject project, string file)
         {
-#if VS2017 || VS2019
+#if VS2017 || VS2019 || VS2022
             if (project.IsCppProject() || GetUnconfiguredProject(project) == null)
             {
                 project.GetDTEProject().ProjectItems.AddFromFile(file);
@@ -204,9 +186,9 @@ namespace IceBuilder
 #endif
         }
 
+#if VS2017 || VS2019 || VS2022
         private bool HasGeneratedItemDuplicates(IVsProject project)
         {
-#if VS2017 || VS2019
             if (!project.IsCppProject() && GetUnconfiguredProject(project) != null)
             {
                 return project.WithProject((MSProject msproject) =>
@@ -233,13 +215,13 @@ namespace IceBuilder
                     return false;
                 });
             }
-#endif
             return false;
         }
+#endif
 
         public void RemoveGeneratedItemDuplicates(IVsProject project)
         {
-#if VS2017 || VS2019
+#if VS2017 || VS2019 || VS2022
             //
             // With .NET Core project system when default compile items is enabled we
             // can end up with duplicate generated items, as the call to AddItem doesn't
@@ -276,7 +258,7 @@ namespace IceBuilder
 
         public void RemoveGeneratedItemCustomMetadata(IVsProject project, List<string> paths)
         {
-#if VS2017 || VS2019
+#if VS2017 || VS2019 || VS2022
             var projectDir = project.GetProjectBaseDirectory();
             project.UpdateProject((MSProject msproject) =>
                 {
@@ -325,7 +307,7 @@ namespace IceBuilder
                         {
                             item.SetMetadataValue("SliceCompileSource", slice);
                         }
-#if VS2017 || VS2019
+#if VS2017 || VS2019 || VS2022
                         //
                         // With Visual Studio 2017 if the item originate from a glob we
                         // update the item medata using the Update attribute
@@ -361,7 +343,7 @@ namespace IceBuilder
 
         public IDisposable OnProjectUpdate(IVsProject project, Action onProjectUpdate)
         {
-#if VS2017 || VS2019
+#if VS2017 || VS2019 || VS2022
             var unconfiguredProject = GetUnconfiguredProject(project);
             if (unconfiguredProject != null)
             {
@@ -369,10 +351,7 @@ namespace IceBuilder
                 var projectSource = activeConfiguredProjectSubscription.ProjectSource;
 
                 return projectSource.SourceBlock.LinkTo(
-                    new ActionBlock<IProjectVersionedValue<IProjectSnapshot>>(update =>
-                   {
-                       onProjectUpdate();
-                   }));
+                    new ActionBlock<IProjectVersionedValue<IProjectSnapshot>>(update => onProjectUpdate()));
             }
 #endif
             return null;

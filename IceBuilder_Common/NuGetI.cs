@@ -50,10 +50,7 @@ namespace IceBuilder
             ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                if (BatchEnd != null)
-                {
-                    BatchEnd();
-                }
+                BatchEnd?.Invoke();
             });
         }
 
@@ -70,17 +67,6 @@ namespace IceBuilder
         public void Restore(EnvDTE.Project project)
         {
             PackageRestorer.RestorePackages(project);
-        }
-        private void PackageInstallerEvents_PackageInstalled(IVsPackageMetadata metadata)
-        {
-            ThreadHelper.JoinableTaskFactory.Run(async () =>
-            {
-                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                if (BatchEnd != null)
-                {
-                    BatchEnd();
-                }
-            });
         }
 
         void INuGet.OnNugetBatchEnd(NuGetBatchEnd batchEnd)

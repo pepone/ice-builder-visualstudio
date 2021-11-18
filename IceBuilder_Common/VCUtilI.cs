@@ -1,34 +1,8 @@
-// **********************************************************************
-//
 // Copyright (c) ZeroC, Inc. All rights reserved.
-//
-// **********************************************************************
 
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.VCProjectEngine;
 using System;
-
-/* Unmerged change from project 'IceBuilder_VS2019'
-Before:
-using System.Linq;
-using Microsoft.VisualStudio.VCProjectEngine;
-using Microsoft.VisualStudio.Shell.Interop;
-After:
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-*/
-
-/* Unmerged change from project 'IceBuilder_VS2015'
-Before:
-using System.Linq;
-using Microsoft.VisualStudio.VCProjectEngine;
-using Microsoft.VisualStudio.Shell.Interop;
-After:
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-*/
 using System.IO;
 
 namespace IceBuilder
@@ -38,7 +12,8 @@ namespace IceBuilder
         public bool SetupSliceFilter(EnvDTE.Project dteProject)
         {
             VCProject project = dteProject.Object as VCProject;
-            foreach (VCFilter f in project.Filters)
+            IVCCollection filters = (IVCCollection)project.Filters;
+            foreach (VCFilter f in filters)
             {
                 if (f.Name.Equals("Slice Files"))
                 {
@@ -51,26 +26,28 @@ namespace IceBuilder
                 }
             }
 
-            VCFilter filter = project.AddFilter("Slice Files");
+            VCFilter filter = (VCFilter)project.AddFilter("Slice Files");
             filter.Filter = "ice";
             return true;
         }
 
         public VCFilter FindOrCreateFilter(VCFilter parent, string name)
         {
-            foreach (VCFilter f in parent.Filters)
+            IVCCollection filters = (IVCCollection)parent.Filters;
+            foreach (VCFilter f in filters)
             {
                 if (f.Name.Equals(name))
                 {
                     return f;
                 }
             }
-            return parent.AddFilter(name);
+            return (VCFilter)parent.AddFilter(name);
         }
 
         public VCFile FindFile(VCProject project, string name)
         {
-            foreach (VCFile file in project.Files)
+            IVCCollection files = (IVCCollection)project.Files;
+            foreach (VCFile file in files)
             {
                 if (name.Equals(file.RelativePath))
                 {
@@ -82,30 +59,29 @@ namespace IceBuilder
 
         public VCFilter FindOrCreateFilter(VCProject parent, string name)
         {
-            foreach (VCFilter f in parent.Filters)
+            IVCCollection filters = (IVCCollection)parent.Filters;
+            foreach (VCFilter f in filters)
             {
                 if (f.Name.Equals(name))
                 {
                     return f;
                 }
             }
-            return parent.AddFilter(name);
+            return (VCFilter)parent.AddFilter(name);
         }
 
         public string Evaluate(EnvDTE.Configuration dteConfig, string value)
         {
             EnvDTE.Project dteProject = dteConfig.Owner as EnvDTE.Project;
             VCProject project = dteProject.Object as VCProject;
-            VCConfiguration config = project.Configurations.Item(dteConfig.ConfigurationName + "|" + dteConfig.PlatformName);
+            VCConfiguration config = (VCConfiguration)(project.Configurations as IVCCollection).Item(dteConfig.ConfigurationName + "|" + dteConfig.PlatformName);
             return config.Evaluate(value);
         }
 
         public void AddGeneratedFile(IVsProject project, VCFilter filter, string path, EnvDTE.Configuration config)
         {
-            int found;
-            uint id;
             VSDOCUMENTPRIORITY[] priority = new VSDOCUMENTPRIORITY[1];
-            project.IsDocumentInProject(path, out found, priority, out id);
+            project.IsDocumentInProject(path, out int found, priority, out uint _);
             if (found == 0)
             {
                 if (!Directory.Exists(Path.GetDirectoryName(path)))
@@ -126,11 +102,13 @@ namespace IceBuilder
                 {
                     filter = FindOrCreateFilter(filter, config.PlatformName);
                     filter = FindOrCreateFilter(filter, config.ConfigurationName);
-                    VCFile file = filter.AddFile(path);
-                    foreach (VCFileConfiguration c in file.FileConfigurations)
+                    VCFile file = (VCFile)filter.AddFile(path);
+                    VCFileConfiguration[] configurations = (VCFileConfiguration[])file.FileConfigurations;
+                    foreach (VCFileConfiguration c in configurations)
                     {
-                        if (!c.ProjectConfiguration.ConfigurationName.Equals(config.ConfigurationName) ||
-                           !c.ProjectConfiguration.Platform.Name.Equals(config.PlatformName))
+                        VCConfiguration projectConfiguration = (VCConfiguration)c.ProjectConfiguration;
+                        VCPlatform projectPlatform = (VCPlatform)projectConfiguration.Platform;
+                        if (projectConfiguration.ConfigurationName != config.ConfigurationName || projectPlatform.Name != config.PlatformName)
                         {
                             c.ExcludedFromBuild = true;
                         }
@@ -139,9 +117,7 @@ namespace IceBuilder
 
                 try
                 {
-                    //
                     // Remove the file otherwise it will be considered up to date.
-                    //
                     File.Delete(path);
                 }
                 catch (Exception)
