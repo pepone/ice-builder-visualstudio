@@ -67,13 +67,17 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="VSPackage.resx">
-      <MergeWithCTO>true</MergeWithCTO>
-      <ManifestResourceName>VSPackage</ManifestResourceName>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
+    <Resource Include="..\assets\Package.ico">
+      <Link>Resources\Package.ico</Link>
+    </Resource>
+    <Content Include="..\assets\Grammars.pkgdef">
+      <Link>Grammars\Grammars.pkgdef</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\assets\Package.png">
+      <Link>Resources\Package.png</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="..\IceBuilder_VS2015\bin\IceBuilder.VS2015.dll">
       <Link>Resources\IceBuilder.VS2015.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -101,20 +105,16 @@
       <Link>Resources\IceBuilder.VS2019.pdb</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Grammars.pkgdef">
+    <Content Include="..\assets\LICENSE.rtf">
+      <Link>Resources\LICENSE.rtf</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Resources\LICENSE.rtf">
+    <Content Include="..\assets\upgrade.rtf">
+      <Link>Resources\upgrade.rtf</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Resource Include="Resources\Package.ico" />
-    <Content Include="Resources\Package.png">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Grammars\slice.tmLanguage.json">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Resources\upgrade.rtf">
+    <Content Include="..\assets\slice.tmLanguage.json">
+      <Link>Grammars\slice.tmLanguage.json</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <None Include="source.extension.vsixmanifest">

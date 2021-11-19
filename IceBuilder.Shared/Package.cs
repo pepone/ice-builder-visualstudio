@@ -513,9 +513,13 @@ namespace IceBuilder
                 {
                     assembly = Assembly.LoadFrom(Path.Combine(ResourcesDirectory, "IceBuilder.VS2017.dll"));
                 }
-                else
+                else if (DTE.Version.StartsWith("16.0"))
                 {
                     assembly = Assembly.LoadFrom(Path.Combine(ResourcesDirectory, "IceBuilder.VS2019.dll"));
+                }
+                else
+                {
+                    assembly = Assembly.LoadFrom(Path.Combine(ResourcesDirectory, "IceBuilder.VS2022.dll"));
                 }
                 var factory = assembly.GetType("IceBuilder.ProjectHelperFactoryI").GetConstructor(new Type[] { }).Invoke(
                     new object[] { }) as IVsProjectHelperFactory;
@@ -577,7 +581,7 @@ namespace IceBuilder
             try
             {
                 if (action == EnvDTE.vsBuildAction.vsBuildActionBuild ||
-                   action == EnvDTE.vsBuildAction.vsBuildActionRebuildAll)
+                    action == EnvDTE.vsBuildAction.vsBuildActionRebuildAll)
                 {
                     //
                     // Ensure this runs once for parallel builds.

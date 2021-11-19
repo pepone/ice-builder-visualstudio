@@ -66,5 +66,8 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)UpgradeDialogProgress.resx">
       <DependentUpon>UpgradeDialogProgress.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)VSPackage.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
