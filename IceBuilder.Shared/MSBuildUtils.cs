@@ -45,11 +45,9 @@ namespace IceBuilder
             @"Use ""Tools &gt; Extensions and Updates"" to install it. " +
             @"For more information, see https://visualstudiogallery.msdn.microsoft.com/1a64e701-63f2-4740-8004-290e6c682ce0.";
 
-        public static bool HasImport(Microsoft.Build.Evaluation.Project project, string path)
-        {
-            return project.Xml.Imports.FirstOrDefault(
+        public static bool HasImport(Microsoft.Build.Evaluation.Project project, string path) =>
+            project.Xml.Imports.FirstOrDefault(
                 p => p.Project.Equals(path, StringComparison.CurrentCultureIgnoreCase)) != null;
-        }
 
         public static bool RemoveProjectFlavorIfExists(Microsoft.Build.Evaluation.Project project, string flavor)
         {
@@ -75,11 +73,9 @@ namespace IceBuilder
             return property != null && property.Value.IndexOf(flavor) != -1;
         }
 
-        public static bool IsCppProject(Microsoft.Build.Evaluation.Project project)
-        {
-            return project != null &&
+        public static bool IsCppProject(Microsoft.Build.Evaluation.Project project) =>
+            project != null &&
                 project.Xml.Imports.FirstOrDefault(p => p.Project.IndexOf("Microsoft.Cpp.targets") != -1) != null;
-        }
 
         public static bool IsCSharpProject(Microsoft.Build.Evaluation.Project project)
         {
@@ -307,7 +303,7 @@ namespace IceBuilder
                 if (value.Equals("yes", StringComparison.CurrentCultureIgnoreCase) ||
                    value.Equals("true", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    additionalOptions = String.Format("{0} --stream ", additionalOptions).Trim();
+                    additionalOptions = $"{additionalOptions} --stream ".Trim();
                 }
                 project.RemovePropertyWithName(PropertyNames.Old.Stream);
                 modified = true;
@@ -316,7 +312,7 @@ namespace IceBuilder
             value = project.GetProperty(PropertyNames.Old.DLLExport, false);
             if (!string.IsNullOrEmpty(value))
             {
-                additionalOptions = String.Format("{0} --dll-export {1}", additionalOptions, value).Trim();
+                additionalOptions = $"{additionalOptions} --dll-export {value}".Trim();
                 project.RemovePropertyWithName(PropertyNames.Old.DLLExport);
                 modified = true;
             }
@@ -324,7 +320,7 @@ namespace IceBuilder
             value = project.GetProperty(PropertyNames.Old.Checksum, false);
             if (!string.IsNullOrEmpty(value))
             {
-                additionalOptions = String.Format("{0} --checksum", additionalOptions).Trim();
+                additionalOptions = "{additionalOptions} --checksum".Trim();
                 project.RemovePropertyWithName(PropertyNames.Old.Checksum);
                 modified = true;
             }
@@ -332,7 +328,7 @@ namespace IceBuilder
             value = project.GetProperty(PropertyNames.Old.Tie, false);
             if (!string.IsNullOrEmpty(value))
             {
-                additionalOptions = String.Format("{0} --tie", additionalOptions).Trim();
+                additionalOptions = $"{additionalOptions} --tie".Trim();
                 project.RemovePropertyWithName(PropertyNames.Old.Tie);
                 modified = true;
             }
@@ -382,10 +378,8 @@ namespace IceBuilder
             return modified;
         }
 
-        public static bool UpgradeCSharpGeneratedItems(Microsoft.Build.Evaluation.Project project, string outputDir)
-        {
-            return UpgradeGeneratedItems(project, outputDir, "cs", "Compile");
-        }
+        public static bool UpgradeCSharpGeneratedItems(Microsoft.Build.Evaluation.Project project, string outputDir) =>
+            UpgradeGeneratedItems(project, outputDir, "cs", "Compile");
 
         public static bool UpgradeGeneratedItems(Microsoft.Build.Evaluation.Project project, string outputDir, string ext, string itemType)
         {
@@ -429,9 +423,7 @@ namespace IceBuilder
                     }
                 }
 
-                //
                 // Remove EnsureIceBuilderImports target
-                //
                 var target = project.Xml.Targets.FirstOrDefault(
                     t => t.Name.Equals("EnsureIceBuilderImports", StringComparison.CurrentCultureIgnoreCase));
                 if (target != null)

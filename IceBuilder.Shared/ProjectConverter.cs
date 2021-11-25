@@ -28,14 +28,16 @@ namespace IceBuilder
 
             if (upgradeProjects.Count > 0)
             {
-                UpgradeDialog dialog = new UpgradeDialog();
-                dialog.StartPosition = FormStartPosition.CenterParent;
-                dialog.Projects = upgradeProjects;
+                UpgradeDialog dialog = new UpgradeDialog
+                {
+                    StartPosition = FormStartPosition.CenterParent,
+                    Projects = upgradeProjects
+                };
                 dialog.ShowDialog();
             }
         }
 
-        public static void Upgrade(Dictionary<string, IVsProject> projects, UpgradeProgressCallback progressCallback)
+        public static void Upgrade(Dictionary<string, IVsProject> projects, IUpgradeProgressCallback progressCallback)
         {
             Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
             Thread t = new Thread(() =>
@@ -129,11 +131,17 @@ namespace IceBuilder
                                             cppOutputDir.Add(Package.Instance.VCUtil.Evaluate(configuration, outputDirUnevaluated));
                                             if (string.IsNullOrEmpty(headerOutputDirUnevaluated))
                                             {
-                                                cppHeaderOutputDir.Add(Package.Instance.VCUtil.Evaluate(configuration, outputDirUnevaluated));
+                                                cppHeaderOutputDir.Add(
+                                                    Package.Instance.VCUtil.Evaluate(
+                                                        configuration,
+                                                        outputDirUnevaluated));
                                             }
                                             else
                                             {
-                                                cppHeaderOutputDir.Add(Package.Instance.VCUtil.Evaluate(configuration, headerOutputDirUnevaluated));
+                                                cppHeaderOutputDir.Add(
+                                                    Package.Instance.VCUtil.Evaluate(
+                                                        configuration,
+                                                        headerOutputDirUnevaluated));
                                             }
                                         }
                                         waitEvent.Set();
@@ -148,29 +156,31 @@ namespace IceBuilder
                                     {
                                         project.UpdateProject((MSProject msproject) =>
                                             {
-                                                var item = msproject.AllEvaluatedItems.FirstOrDefault(referenceItem =>
-                                                                referenceItem.ItemType.Equals("Reference") &&
-                                                                referenceItem.EvaluatedInclude.Split(",".ToCharArray()).ElementAt(0).Equals(r.Name));
-                                                if (item != null)
+                                                var item = msproject.AllEvaluatedItems.FirstOrDefault(
+                                                    referenceItem =>
+                                                        referenceItem.ItemType.Equals("Reference") &&
+                                                        referenceItem.EvaluatedInclude.Split(
+                                                            ",".ToCharArray()).ElementAt(0).Equals(r.Name));
+                                                if (item != null &&  item.HasMetadata("HintPath"))
                                                 {
-                                                    if (item.HasMetadata("HintPath"))
+                                                    var hintPath = item.GetMetadata("HintPath").UnevaluatedValue;
+                                                    if (hintPath.Contains("$(IceAssembliesDir)"))
                                                     {
-                                                        var hintPath = item.GetMetadata("HintPath").UnevaluatedValue;
-                                                        if (hintPath.Contains("$(IceAssembliesDir)"))
+                                                        hintPath = hintPath.Replace(
+                                                            "$(IceAssembliesDir)",
+                                                            FileUtil.RelativePath(
+                                                                Path.GetDirectoryName(r.ContainingProject.FullName),
+                                                                assemblyDir));
+                                                        // If the HintPath points to the NuGet zeroc.ice.net package
+                                                        // we upgrade it to not use IceAssembliesDir otherwise we
+                                                        // remove it
+                                                        if (hintPath.Contains("packages\\zeroc.ice.net"))
                                                         {
-                                                            hintPath = hintPath.Replace("$(IceAssembliesDir)",
-                                                                FileUtil.RelativePath(Path.GetDirectoryName(r.ContainingProject.FullName), assemblyDir));
-                                                            //
-                                                            // If the HintPath points to the NuGet zeroc.ice.net package we upgrade it to not
-                                                            // use IceAssembliesDir otherwise we remove it
-                                                            if (hintPath.Contains("packages\\zeroc.ice.net"))
-                                                            {
-                                                                item.SetMetadataValue("HintPath", hintPath);
-                                                            }
-                                                            else
-                                                            {
-                                                                item.RemoveMetadata("HintPath");
-                                                            }
+                                                            item.SetMetadataValue("HintPath", hintPath);
+                                                        }
+                                                        else
+                                                        {
+                                                            item.RemoveMetadata("HintPath");
                                                         }
                                                     }
                                                 }
@@ -196,7 +206,8 @@ namespace IceBuilder
                                     MSBuildUtils.UpgradeGeneratedItems(msproject, d, headerExt, "ClInclude");
                                 }
 
-                                var propertyGroup = msproject.Xml.PropertyGroups.FirstOrDefault(group => group.Label.Equals("IceBuilder"));
+                                var propertyGroup = msproject.Xml.PropertyGroups.FirstOrDefault(
+                                    group => group.Label.Equals("IceBuilder"));
                                 if (propertyGroup != null)
                                 {
                                     propertyGroup.Parent.RemoveChild(propertyGroup);
@@ -231,9 +242,7 @@ namespace IceBuilder
             t.Start();
         }
 
-        //
         // Check if IceBuilder 4.x is enabled
-        //
         public static IceBuilderProjectType IsIceBuilderEnabled(IVsProject project)
         {
             if (project != null)

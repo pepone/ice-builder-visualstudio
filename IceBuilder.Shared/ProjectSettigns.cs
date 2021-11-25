@@ -6,10 +6,7 @@ namespace IceBuilder
 {
     public class ProjectSettigns
     {
-        public ProjectSettigns(IVsProject project)
-        {
-            _project = project;
-        }
+        public ProjectSettigns(IVsProject project) => _project = project;
 
         public void Load()
         {
@@ -25,28 +22,13 @@ namespace IceBuilder
             _project.SetItemMetadata(ItemMetadataNames.AdditionalOptions, AdditionalOptions);
         }
 
-        public bool IsMSBuildIceBuilderInstalled()
-        {
-            return _project.IsMSBuildIceBuilderInstalled();
-        }
+        public bool IsMSBuildIceBuilderInstalled() => _project.IsMSBuildIceBuilderInstalled();
 
-        public string OutputDir
-        {
-            get;
-            set;
-        }
+        public string OutputDir { get; set; }
 
-        public string IncludeDirectories
-        {
-            get;
-            set;
-        }
+        public string IncludeDirectories { get; set; }
 
-        public string AdditionalOptions
-        {
-            get;
-            set;
-        }
+        public string AdditionalOptions { get; set; }
 
         public IVsProject _project;
     }

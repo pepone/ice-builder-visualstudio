@@ -15,9 +15,9 @@ namespace IceBuilder
             IVCCollection filters = (IVCCollection)project.Filters;
             foreach (VCFilter f in filters)
             {
-                if (f.Name.Equals("Slice Files"))
+                if (f.Name == "Slice Files")
                 {
-                    if (string.IsNullOrEmpty(f.Filter) || !f.Filter.Equals("ice"))
+                    if (string.IsNullOrEmpty(f.Filter) || f.Filter != "ice")
                     {
                         f.Filter = "ice";
                         return true;
@@ -36,7 +36,7 @@ namespace IceBuilder
             IVCCollection filters = (IVCCollection)parent.Filters;
             foreach (VCFilter f in filters)
             {
-                if (f.Name.Equals(name))
+                if (f.Name == name)
                 {
                     return f;
                 }
@@ -49,7 +49,7 @@ namespace IceBuilder
             IVCCollection files = (IVCCollection)project.Files;
             foreach (VCFile file in files)
             {
-                if (name.Equals(file.RelativePath))
+                if (name == file.RelativePath)
                 {
                     return file;
                 }
@@ -62,7 +62,7 @@ namespace IceBuilder
             IVCCollection filters = (IVCCollection)parent.Filters;
             foreach (VCFilter f in filters)
             {
-                if (f.Name.Equals(name))
+                if (f.Name == name)
                 {
                     return f;
                 }

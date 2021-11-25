@@ -1,8 +1,4 @@
-// **********************************************************************
-//
 // Copyright (c) ZeroC, Inc. All rights reserved.
-//
-// **********************************************************************
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -14,11 +10,7 @@ namespace IceBuilder
 {
     public partial class CSharpConfigurationView : UserControl
     {
-        private PropertyPage Page
-        {
-            get;
-            set;
-        }
+        private PropertyPage Page { get; set; }
 
         public CSharpConfigurationView(PropertyPage page)
         {
@@ -68,10 +60,7 @@ namespace IceBuilder
         public bool _dirty;
         public bool Dirty
         {
-            get
-            {
-                return _dirty;
-            }
+            get =>_dirty;
             set
             {
                 ThreadHelper.ThrowIfNotOnUIThread();
@@ -85,38 +74,20 @@ namespace IceBuilder
 
         public string OutputDir
         {
-            get
-            {
-                return txtOutputDir.Text;
-            }
-            set
-            {
-                txtOutputDir.Text = value;
-            }
+            get => txtOutputDir.Text;
+            set => txtOutputDir.Text = value;
         }
 
         public string AdditionalOptions
         {
-            get
-            {
-                return txtAdditionalOptions.Text;
-            }
-            set
-            {
-                txtAdditionalOptions.Text = value;
-            }
+            get => txtAdditionalOptions.Text;
+            set => txtAdditionalOptions.Text = value;
         }
 
         public string IncludeDirectories
         {
-            get
-            {
-                return txtIncludeDirectories.Text;
-            }
-            set
-            {
-                txtIncludeDirectories.Text = value;
-            }
+            get => txtIncludeDirectories.Text;
+            set => txtIncludeDirectories.Text = value;
         }
 
         private void BtnOutputDirectoryBrowse_Click(object sender, EventArgs e)
@@ -180,11 +151,9 @@ namespace IceBuilder
             }
         }
 
-        private bool IsDirty()
-        {
-            return !txtOutputDir.Text.Equals(Page.Settings.OutputDir) ||
-                !txtIncludeDirectories.Text.Equals(Page.Settings.IncludeDirectories) ||
-                !txtAdditionalOptions.Text.Equals(Page.Settings.AdditionalOptions);
-        }
+        private bool IsDirty() =>
+            !txtOutputDir.Text.Equals(Page.Settings.OutputDir) ||
+            !txtIncludeDirectories.Text.Equals(Page.Settings.IncludeDirectories) ||
+            !txtAdditionalOptions.Text.Equals(Page.Settings.AdditionalOptions);
     }
 }

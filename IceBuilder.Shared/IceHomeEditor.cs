@@ -1,8 +1,4 @@
-// **********************************************************************
-//
 // Copyright (c) ZeroC, Inc. All rights reserved.
-//
-// **********************************************************************
 
 using Microsoft.VisualStudio.Shell;
 using System;
@@ -52,7 +48,7 @@ namespace IceBuilder
             return true;
         }
 
-        private void btnIceHome_Click(object sender, EventArgs e)
+        private void BtnIceHome_Click(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             string selectedPath = UIUtil.BrowserFolderDialog(Handle, "Select Folder",

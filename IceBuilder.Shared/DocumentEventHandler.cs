@@ -137,22 +137,15 @@ namespace IceBuilder
             ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-                uint pgrfRDTFlags;
-                uint pdwReadLocks;
-                uint pdwEditLocks;
-                IVsHierarchy ppHier;
-                IntPtr ppunkDocData;
-
                 ErrorHandler.ThrowOnFailure(RunningDocumentTable.GetDocumentInfo(
                     cookie,
-                    out pgrfRDTFlags,
-                    out pdwReadLocks,
-                    out pdwEditLocks,
+                    out uint pgrfRDTFlags,
+                    out uint pdwReadLocks,
+                    out uint pdwEditLocks,
                     out pbstrMkDocument,
-                    out ppHier,
+                    out IVsHierarchy ppHier,
                     out pitemid,
-                    out ppunkDocData));
+                    out IntPtr ppunkDocData));
                 pProject = ppHier as IVsProject;
             });
 

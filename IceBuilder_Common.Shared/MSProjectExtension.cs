@@ -8,14 +8,15 @@ namespace IceBuilder
 {
     public static class MSProjectExtension
     {
-        public static Project LoadedProject(string path)
-        {
-            return ProjectCollection.GlobalProjectCollection.GetLoadedProjects(path).FirstOrDefault() ??
-                   ProjectCollection.GlobalProjectCollection.LoadProject(path);
-        }
+        public static Project LoadedProject(string path) =>
+            ProjectCollection.GlobalProjectCollection.GetLoadedProjects(path).FirstOrDefault() ??
+            ProjectCollection.GlobalProjectCollection.LoadProject(path);
 
-        public static string GetItemMetadata(this Project project, string identity, string name,
-                                             string defaultValue = "")
+        public static string GetItemMetadata(
+            this Project project,
+            string identity,
+            string name,
+            string defaultValue = "")
         {
             var item = project.AllEvaluatedItems.FirstOrDefault(
                 i => i.ItemType.Equals("SliceCompile") && i.EvaluatedInclude.Equals(identity));
@@ -29,8 +30,11 @@ namespace IceBuilder
             }
         }
 
-        public static string GetDefaultItemMetadata(this Project project, string name, bool evaluated,
-                                                    string defaultValue = "")
+        public static string GetDefaultItemMetadata(
+            this Project project,
+            string name,
+            bool evaluated,
+            string defaultValue = "")
         {
             var meta = project.AllEvaluatedItemDefinitionMetadata.LastOrDefault(
                 m => m.ItemType.Equals("SliceCompile") && m.Name.Equals(name));
@@ -41,7 +45,12 @@ namespace IceBuilder
             return defaultValue;
         }
 
-        public static void SetItemMetadata(this Project project, string itemType, string label, string name, string value)
+        public static void SetItemMetadata(
+            this Project project,
+            string itemType,
+            string label,
+            string name,
+            string value)
         {
             var group = project.Xml.ItemDefinitionGroups.FirstOrDefault(
                 g => g.Label.Equals(label, StringComparison.CurrentCultureIgnoreCase));
@@ -52,29 +61,22 @@ namespace IceBuilder
 
                 while (true)
                 {
-                    //
-                    // For C++ projects we create our ItemDefinitionGroup after the last
-                    // existing ItemDefinitionGroup
-                    //
+                    // For C++ projects we create our ItemDefinitionGroup after the last existing ItemDefinitionGroup.
                     var lastItemDefinitionGroups = project.Xml.ItemDefinitionGroups.LastOrDefault();
                     if (lastItemDefinitionGroups != null)
                     {
                         project.Xml.InsertAfterChild(group, lastItemDefinitionGroups);
                         break;
                     }
-                    //
-                    // For .NET and .NET Core projects we create our ItemDefinitionGroup after the last
-                    // existing PropertyGroup
-                    //
+                    // For .NET projects we create our ItemDefinitionGroup after the last existing PropertyGroup.
                     var lastPropertyGroup = project.Xml.PropertyGroups.LastOrDefault();
                     if (lastPropertyGroup != null)
                     {
                         project.Xml.InsertAfterChild(group, lastPropertyGroup);
                         break;
                     }
-                    //
+
                     // Otherwise add our ItemDefinitionGroup as project first child
-                    //
                     project.Xml.PrependChild(group);
                     break;
                 }
@@ -97,15 +99,11 @@ namespace IceBuilder
             }
         }
 
-        public static void SetItemMetadata(this Project project, string name, string value)
-        {
+        public static void SetItemMetadata(this Project project, string name, string value) =>
             project.SetItemMetadata("SliceCompile", "IceBuilder", name, value);
-        }
 
-        public static void SetClCompileAdditionalIncludeDirectories(this Project project, string value)
-        {
+        public static void SetClCompileAdditionalIncludeDirectories(this Project project, string value) =>
             // Set AdditionalIncludeDirectories in all ClCompile ItemDefinitions
-
             project.Xml.ItemDefinitionGroups.SelectMany(def => def.ItemDefinitions)
                 .Where(element => element.ItemType.Equals("ClCompile")).ToList()
                 .ForEach(cl =>
@@ -121,7 +119,6 @@ namespace IceBuilder
                         metadata.Value = string.Format("{0};{1}", value, metadata.Value);
                     }
                 });
-        }
 
         public static bool RemovePropertyWithName(this Project project, string name)
         {
@@ -171,10 +168,8 @@ namespace IceBuilder
                     g => g.Label.Equals(label, StringComparison.CurrentCultureIgnoreCase));
                 if (group == null)
                 {
-                    //
                     // Create our property group after the main language targets are imported so we can use the properties
                     // defined in this files.
-                    //
                     var import = project.Xml.Imports.FirstOrDefault(
                         p => p.Project.IndexOf("Microsoft.Cpp.targets", StringComparison.CurrentCultureIgnoreCase) != -1 ||
                              p.Project.Equals("Microsoft.CSharp.targets", StringComparison.CurrentCultureIgnoreCase));

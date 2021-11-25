@@ -1,8 +1,4 @@
-﻿// **********************************************************************
-//
-// Copyright (c) ZeroC, Inc. All rights reserved.
-//
-// **********************************************************************
+﻿// Copyright (c) ZeroC, Inc. All rights reserved.
 
 using System;
 using System.Threading.Tasks;
@@ -101,8 +97,10 @@ namespace IceBuilder
             return result;
         }
 
-        protected static async System.Threading.Tasks.Task UpdateProjectAsync(UnconfiguredProject unconfiguredProject, Action<MSProject> action,
-                                                                              bool switchToMainThread = false)
+        protected static async System.Threading.Tasks.Task UpdateProjectAsync(
+            UnconfiguredProject unconfiguredProject,
+            Action<MSProject> action,
+            bool switchToMainThread = false)
         {
             var service = unconfiguredProject.ProjectService.Services.ProjectLockService;
             if (service != null)
@@ -197,16 +195,12 @@ namespace IceBuilder
 
                     foreach (var item in all)
                     {
-                        //
-                        // If there is a glob item that already match the evaluated include path we
-                        // can remove the non glob item as it is a duplicate
-                        //
+                        // If there is a glob item that already match the evaluated include path we can remove the non
+                        // glob item as it is a duplicate.
                         var globItem = msproject.AllEvaluatedItems.FirstOrDefault(i =>
-                        {
-                            return i.HasMetadata("SliceCompileSource") &&
-                                   !i.EvaluatedInclude.Equals(i.UnevaluatedInclude) &&
-                                   i.EvaluatedInclude.Equals(item.Include);
-                        });
+                            i.HasMetadata("SliceCompileSource") &&
+                            !i.EvaluatedInclude.Equals(i.UnevaluatedInclude, StringComparison.OrdinalIgnoreCase) &&
+                            i.EvaluatedInclude.Equals(item.Include, StringComparison.OrdinalIgnoreCase));
                         if (globItem != null)
                         {
                             return true;
@@ -222,12 +216,9 @@ namespace IceBuilder
         public void RemoveGeneratedItemDuplicates(IVsProject project)
         {
 #if VS2017 || VS2019 || VS2022
-            //
-            // With .NET Core project system when default compile items is enabled we
-            // can end up with duplicate generated items, as the call to AddItem doesn't
-            // detect that the new create file is already part of a glob and adds a
-            // second item with the given include.
-            //
+            // With .NET project system when default compile items are enabled we can end up with duplicate generated
+            // items, as the call to AddItem doesn't detect that the new create file is already part of a glob and adds
+            // a second item with the given include.
             if (HasGeneratedItemDuplicates(project))
             {
                 project.UpdateProject((MSProject msproject) =>
@@ -236,16 +227,12 @@ namespace IceBuilder
 
                         foreach (var item in all)
                         {
-                            //
-                            // If there is a glob item that already match the evaluated include path we
-                            // can remove the non glob item as it is a duplicate
-                            //
+                            // If there is a glob item that already match the evaluated include path we can remove the
+                            // non glob item as it is a duplicate.
                             var globItem = msproject.AllEvaluatedItems.FirstOrDefault(i =>
-                                {
-                                    return i.HasMetadata("SliceCompileSource") &&
-                                           !i.EvaluatedInclude.Equals(i.UnevaluatedInclude) &&
-                                           i.EvaluatedInclude.Equals(item.Include);
-                                });
+                                i.HasMetadata("SliceCompileSource") &&
+                                !i.EvaluatedInclude.Equals(i.UnevaluatedInclude, StringComparison.OrdinalIgnoreCase) &&
+                                i.EvaluatedInclude.Equals(item.Include, StringComparison.OrdinalIgnoreCase));
                             if (globItem != null)
                             {
                                 item.Parent.RemoveChild(item);
@@ -264,7 +251,9 @@ namespace IceBuilder
                 {
                     var items = msproject.Xml.Items.Where(item =>
                         {
-                            if (item.ItemType.Equals("Compile") || item.ItemType.Equals("ClCompile") || item.ItemType.Equals("ClInclude"))
+                            if (item.ItemType.Equals("Compile", StringComparison.OrdinalIgnoreCase) ||
+                                item.ItemType.Equals("ClCompile", StringComparison.OrdinalIgnoreCase) ||
+                                item.ItemType.Equals("ClInclude", StringComparison.OrdinalIgnoreCase))
                             {
                                 return paths.Contains(Path.Combine(projectDir, item.Update));
                             }
@@ -299,19 +288,14 @@ namespace IceBuilder
                                 metadata.Condition = string.Format("'$(Configuration)|$(Platform)'=='{0}'", conf);
                             }
                         }
-                        //
-                        // Only set SliceCompileSource if the item doesn't originate
-                        // from a glob expression
-                        //
+                        // Only set SliceCompileSource if the item doesn't originate from a glob expression
                         if (item.EvaluatedInclude.Equals(item.UnevaluatedInclude))
                         {
                             item.SetMetadataValue("SliceCompileSource", slice);
                         }
 #if VS2017 || VS2019 || VS2022
-                        //
-                        // With Visual Studio 2017 if the item originate from a glob we
-                        // update the item medata using the Update attribute
-                        //
+                        // With Visual Studio 2017 and abvove if the item originate from a glob we update the item
+                        // medata using the Update attribute.
                         else
                         {
                             var updateItem = msproject.Xml.Items.FirstOrDefault(i => generated.Equals(i.Update));

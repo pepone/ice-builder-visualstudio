@@ -7,7 +7,7 @@ namespace IceBuilder
     // This class is used to asynchronously read the output of a Slice compiler process.
     public class StreamReader
     {
-        public void appendData(object sendingProcess, DataReceivedEventArgs outLine)
+        public void AppendData(object sendingProcess, DataReceivedEventArgs outLine)
         {
             if (outLine.Data != null)
             {
@@ -15,10 +15,7 @@ namespace IceBuilder
             }
         }
 
-        public string data()
-        {
-            return _data;
-        }
+        public string Data() => _data;
 
         private string _data = "";
     }

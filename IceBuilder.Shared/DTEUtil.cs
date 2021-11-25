@@ -37,7 +37,7 @@ namespace IceBuilder
             return VSConstants.VSITEMID_NIL;
         }
 
-        public static IVsProject GetProject(String path)
+        public static IVsProject GetProject(string path)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             List<IVsProject> projects = GetProjects();
@@ -47,10 +47,10 @@ namespace IceBuilder
         public static List<IVsProject> GetProjects()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            IEnumHierarchies enumHierarchies;
             Guid guid = Guid.Empty;
             uint flags = (uint)__VSENUMPROJFLAGS.EPF_ALLPROJECTS;
-            ErrorHandler.ThrowOnFailure(Package.Instance.IVsSolution.GetProjectEnum(flags, guid, out enumHierarchies));
+            ErrorHandler.ThrowOnFailure(
+                Package.Instance.IVsSolution.GetProjectEnum(flags, guid, out IEnumHierarchies enumHierarchies));
 
             List<IVsProject> projects = new List<IVsProject>();
 
@@ -61,8 +61,7 @@ namespace IceBuilder
                 ErrorHandler.ThrowOnFailure(enumHierarchies.Next(1, hierarchies, out sz));
                 if (sz > 0)
                 {
-                    var project = hierarchies[0] as IVsProject;
-                    if (project != null)
+                    if (hierarchies[0] is IVsProject project)
                     {
                         projects.Add(project);
                     }
@@ -77,8 +76,10 @@ namespace IceBuilder
             ThreadHelper.ThrowIfNotOnUIThread();
             IVsHierarchy h = p as IVsHierarchy;
             // Get the first visible child node
-            object value;
-            int result = h.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_FirstVisibleChild, out value);
+            int result = h.GetProperty(
+                VSConstants.VSITEMID_ROOT,
+                (int)__VSHPROPID.VSHPROPID_FirstVisibleChild,
+                out object value);
             while (ErrorHandler.Succeeded(result))
             {
                 uint child = GetItemId(value);
@@ -92,7 +93,6 @@ namespace IceBuilder
                     GetSubProjects(h, child, ref projects);
 
                     // Get the next visible sibling node
-                    value = null;
                     result = h.GetProperty(child, (int)__VSHPROPID.VSHPROPID_NextVisibleSibling, out value);
                 }
             }
@@ -101,16 +101,13 @@ namespace IceBuilder
         public static void GetSubProjects(IVsHierarchy h, uint itemId, ref List<IVsProject> projects)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            IntPtr nestedValue = IntPtr.Zero;
-            uint nestedId = 0;
             Guid nestedGuid = typeof(IVsHierarchy).GUID;
-            int result = h.GetNestedHierarchy(itemId, ref nestedGuid, out nestedValue, out nestedId);
+            int result = h.GetNestedHierarchy(itemId, ref nestedGuid, out IntPtr nestedValue, out uint nestedId);
             if (ErrorHandler.Succeeded(result) && nestedValue != IntPtr.Zero && nestedId == VSConstants.VSITEMID_ROOT)
             {
                 // Get the nested hierachy
-                IVsProject project = Marshal.GetObjectForIUnknown(nestedValue) as IVsProject;
                 Marshal.Release(nestedValue);
-                if (project != null)
+                if (Marshal.GetObjectForIUnknown(nestedValue) is IVsProject project)
                 {
                     projects.Add(project);
                     GetSubProjects(project, ref projects);
@@ -122,19 +119,14 @@ namespace IceBuilder
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             IVsHierarchy hier = null;
-            var sp = new ServiceProvider(Package.Instance.DTE as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
-            IVsMonitorSelection selectionMonitor = sp.GetService(typeof(IVsMonitorSelection)) as IVsMonitorSelection;
+            var sp = new ServiceProvider(
+                Package.Instance.DTE as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
 
-            //
             // There isn't an open project.
-            //
-            if (selectionMonitor != null)
+            if (sp.GetService(typeof(IVsMonitorSelection)) is IVsMonitorSelection selectionMonitor)
             {
-                IntPtr ppHier;
-                uint pitemid;
-                IVsMultiItemSelect ppMIS;
-                IntPtr ppSC;
-                ErrorHandler.ThrowOnFailure(selectionMonitor.GetCurrentSelection(out ppHier, out pitemid, out ppMIS, out ppSC));
+                _ = ErrorHandler.ThrowOnFailure(
+                    selectionMonitor.GetCurrentSelection(out IntPtr ppHier, out _, out _, out IntPtr ppSC));
 
                 if (ppHier != IntPtr.Zero)
                 {

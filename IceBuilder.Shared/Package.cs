@@ -739,7 +739,7 @@ namespace IceBuilder
 
             process.StartInfo.WorkingDirectory = Path.GetDirectoryName(sliceCompiler);
             StreamReader reader = new StreamReader();
-            process.OutputDataReceived += new DataReceivedEventHandler(reader.appendData);
+            process.OutputDataReceived += new DataReceivedEventHandler(reader.AppendData);
 
             try
             {

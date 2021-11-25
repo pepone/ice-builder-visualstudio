@@ -17,22 +17,12 @@ namespace IceBuilder
     {
         public const string PropertyPageGUID = "1E2800FE-37C5-4FD3-BC2E-969342EE08AF";
 
-        public CSharpConfigurationView ConfigurationView
-        {
-            get;
-            private set;
-        }
+        public CSharpConfigurationView ConfigurationView { get; private set; }
 
-        public IDisposable ProjectSubscription
-        {
-            get;
-            private set;
-        }
+        public IDisposable ProjectSubscription { get; private set; }
 
-        public PropertyPage()
-        {
+        public PropertyPage() =>
             ConfigurationView = new CSharpConfigurationView(this);
-        }
 
         public void Dispose()
         {
@@ -48,8 +38,6 @@ namespace IceBuilder
                 ConfigurationView = null;
             }
         }
-
-        #region IPropertyPage2 methods
 
         public void Activate(IntPtr parentHandle, RECT[] pRect, int modal)
         {
@@ -244,15 +232,11 @@ namespace IceBuilder
             return hr;
         }
 
-        #endregion
-
-        #region IPropertyPage methods
         int IPropertyPage.Apply()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             Apply();
             return VSConstants.S_OK;
         }
-        #endregion
     }
 }

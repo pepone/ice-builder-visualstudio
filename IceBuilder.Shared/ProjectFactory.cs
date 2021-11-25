@@ -20,9 +20,6 @@ namespace IceBuilder
     [Guid(Package.IceBuilderOldFlavorGuid)]
     public class ProjectFactoryOld : FlavoredProjectFactoryBase
     {
-        protected override object PreCreateForOuter(IntPtr IUnknown)
-        {
-            return new ProjectOld();
-        }
+        protected override object PreCreateForOuter(IntPtr IUnknown) => new ProjectOld();
     }
 }

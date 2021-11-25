@@ -11,9 +11,7 @@ namespace IceBuilder
 
     public static class DTEProjectExtension
     {
-        public static VSLangProj.References GetProjectRererences(this EnvDTE.Project project)
-        {
-            return ((VSLangProj.VSProject)project.Object).References;
-        }
+        public static VSLangProj.References GetProjectRererences(this EnvDTE.Project project) =>
+            ((VSLangProj.VSProject)project.Object).References;
     }
 }

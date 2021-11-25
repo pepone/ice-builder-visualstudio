@@ -8,16 +8,13 @@ namespace IceBuilder
     {
         // Slice file name
         public string filename;
-        //
-        // Each entry in this dictionary represents a generated source
-        // file and the list of configurations for which it is build
-        //
+
+        // Each entry in this dictionary represents a generated source file and the list of configurations for which
+        // it is build.
         public Dictionary<string, List<string>> sources;
-        //
-        // Each entry in this dictionary represents a generated C++ header
-        // file and the list of configurations for which it is build for
-        // non C++ project this set is will be always empty.
-        //
+
+        // Each entry in this dictionary represents a generated C++ header file and the list of configurations for
+        // which it is build. It is always empty for non C++ projects.
         public Dictionary<string, List<string>> headers;
     }
 }

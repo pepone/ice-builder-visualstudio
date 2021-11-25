@@ -32,8 +32,10 @@ namespace IceBuilder
 
             int sameCounter = 0;
             while (sameCounter < Math.Min(firstPathParts.Length, secondPathParts.Length) &&
-                string.Equals(firstPathParts[sameCounter], secondPathParts[sameCounter],
-                StringComparison.CurrentCultureIgnoreCase))
+                string.Equals(
+                    firstPathParts[sameCounter],
+                    secondPathParts[sameCounter],
+                    StringComparison.CurrentCultureIgnoreCase))
             {
                 ++sameCounter;
             }

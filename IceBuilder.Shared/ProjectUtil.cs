@@ -20,9 +20,7 @@ namespace IceBuilder
                 (uint)__VSSLNSAVEOPTIONS.SLNSAVEOPT_ForceSave, project as IVsHierarchy, 0));
         }
 
-        //
         // Get the name of a IVsHierachy item give is item id.
-        //
         public static string GetItemName(IVsProject project, uint itemid)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
@@ -38,15 +36,11 @@ namespace IceBuilder
             return value as IVsProject;
         }
 
-        public static bool IsSliceFileName(string name)
-        {
-            return !string.IsNullOrEmpty(name) && Path.GetExtension(name).Equals(".ice");
-        }
+        public static bool IsSliceFileName(string name) =>
+            !string.IsNullOrEmpty(name) && Path.GetExtension(name).Equals(".ice");
 
-        public static string GetDefaultOutputDir(IVsProject project, bool evaluated)
-        {
-            return project.GetDefaultItemMetadata(ItemMetadataNames.OutputDir, evaluated);
-        }
+        public static string GetDefaultOutputDir(IVsProject project, bool evaluated) =>
+            project.GetDefaultItemMetadata(ItemMetadataNames.OutputDir, evaluated);
 
         public static string GetDefaultHeaderOutputDir(IVsProject project, bool evaluated)
         {
@@ -72,8 +66,12 @@ namespace IceBuilder
             }
         }
 
-        public static GeneratedFileSet
-        GetCppGeneratedFiles(IVsProject project, EnvDTE.Project dteproject, IVCUtil vcutil, string projectDir, string item)
+        public static GeneratedFileSet GetCppGeneratedFiles(
+            IVsProject project,
+            EnvDTE.Project dteproject,
+            IVCUtil vcutil,
+            string projectDir,
+            string item)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             var fileset = new GeneratedFileSet
@@ -127,8 +125,7 @@ namespace IceBuilder
             return fileset;
         }
 
-        public static string
-        Evaluate(IVsBuildPropertyStorage propertyStorage, string configName, string input)
+        public static string Evaluate(IVsBuildPropertyStorage propertyStorage, string configName, string input)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             const string pattern = @"\$\((\w+)\)";
@@ -137,14 +134,21 @@ namespace IceBuilder
             foreach (Match match in matches)
             {
                 var name = match.Groups[1].Value;
-                propertyStorage.GetPropertyValue(name, configName, (uint)_PersistStorageType.PST_PROJECT_FILE, out string value);
+                propertyStorage.GetPropertyValue(
+                    name,
+                    configName,
+                    (uint)_PersistStorageType.PST_PROJECT_FILE,
+                    out string value);
                 output = output.Replace(string.Format("$({0})", name), value);
             }
             return output;
         }
 
-        public static GeneratedFileSet
-        GetCsharpGeneratedFiles(IVsProject project, EnvDTE.Project dteproject, string projectDir, string item)
+        public static GeneratedFileSet GetCsharpGeneratedFiles(
+            IVsProject project,
+            EnvDTE.Project dteproject,
+            string projectDir,
+            string item)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             var fileset = new GeneratedFileSet
@@ -180,8 +184,7 @@ namespace IceBuilder
             return fileset;
         }
 
-        public static bool
-        CheckGenerateFileIsValid(IVsProject project, string path)
+        public static bool CheckGenerateFileIsValid(IVsProject project, string path)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             var projectDir = project.GetProjectBaseDirectory();
@@ -206,7 +209,11 @@ namespace IceBuilder
             }
             else
             {
-                var fileset = GetCppGeneratedFiles(project, dteproject, ProjectFactoryHelperInstance.VCUtil, projectDir, path);
+                var fileset = GetCppGeneratedFiles(
+                    project,
+                    dteproject,
+                    ProjectFactoryHelperInstance.VCUtil, projectDir,
+                    path);
 
                 foreach (var source in fileset.sources.Keys)
                 {
@@ -256,10 +263,8 @@ namespace IceBuilder
                 {
                     File.Create(path).Dispose();
                 }
-                //
-                // Check again in case the item gets auto included once the file
-                // has been created
-                //
+
+                // Check again in case the item gets auto included once the file has been created.
                 item = project.GetProjectItem(path);
                 if (item == null)
                 {
@@ -280,9 +285,7 @@ namespace IceBuilder
             else
             {
                 AddCSharpGeneratedFiles(project, file);
-                //
-                // Workaround for .NET Core project system adding duplicate
-                // items when the added item is part of a glob
+                // Workaround for .NET project system adding duplicate items when the added item is part of a glob.
                 project.RemoveGeneratedItemDuplicates();
             }
         }
@@ -294,10 +297,7 @@ namespace IceBuilder
             var dteproject = project.GetDTEProject();
             var fileset = GetCsharpGeneratedFiles(project, dteproject, projectDir, file);
 
-            //
-            // First remove any generated items that are not in the
-            // current generated items set for this Slice file
-            //
+            // First remove any generated items that are not in the current generated items set for this Slice file.
             project.DeleteItems(project.WithProject((MSProject msproject) =>
                 {
                     return msproject.AllEvaluatedItems.Where(
@@ -339,10 +339,7 @@ namespace IceBuilder
                 allConfigurations.Add(ConfigurationString(configuration));
             }
 
-            //
-            // First remove any generated items that are not in the
-            // current generated items set for this Slice file
-            //
+            // First remove any generated items that are not in the current generated items set for this Slice file.
             project.DeleteItems(project.WithProject((MSProject msproject) =>
             {
                 return msproject.AllEvaluatedItems.Where(
@@ -368,7 +365,10 @@ namespace IceBuilder
 
             foreach (var entry in fileset.sources)
             {
-                AddCppGeneratedItem(project, dteproject, vcutil,
+                AddCppGeneratedItem(
+                    project,
+                    dteproject,
+                    vcutil,
                     projectDir,
                     FileUtil.RelativePath(projectDir, fileset.filename),
                     FileUtil.RelativePath(projectDir, entry.Key),
@@ -379,22 +379,26 @@ namespace IceBuilder
 
             foreach (var entry in fileset.headers)
             {
-                AddCppGeneratedItem(project, dteproject, vcutil,
+                AddCppGeneratedItem(
+                    project,
+                    dteproject,
+                    vcutil,
                     projectDir,
                     FileUtil.RelativePath(projectDir, fileset.filename),
                     FileUtil.RelativePath(projectDir, entry.Key), "Header Files", allConfigurations, entry.Value);
             }
         }
 
-        public static void AddCppGeneratedItem(IVsProject project,
-                                       EnvDTE.Project dteproject,
-                                       IVCUtil vcutil,
-                                       string projectDir,
-                                       string path,
-                                       string generatedpath,
-                                       string generatedfilter,
-                                       List<string> allConfigurations,
-                                       List<string> configurations)
+        public static void AddCppGeneratedItem(
+            IVsProject project,
+            EnvDTE.Project dteproject,
+            IVCUtil vcutil,
+            string projectDir,
+            string path,
+            string generatedpath,
+            string generatedfilter,
+            List<string> allConfigurations,
+            List<string> configurations)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             if (TryAddItem(project, Path.Combine(projectDir, generatedpath)))
@@ -402,9 +406,7 @@ namespace IceBuilder
                 var excludedConfigurations = allConfigurations.Where(c => !configurations.Contains(c)).ToList();
                 project.SetGeneratedItemCustomMetadata(path, generatedpath, excludedConfigurations);
 
-                //
-                // If generated item applies only to one platform configuration we move it to the Platform/Configuration filter
-                //
+                // If generated item applies only to one platform configuration we move it to the Platform/Configuration filter.
                 if (configurations.Count == 1)
                 {
                     ParseConfiguration(configurations.First(), out string configurationName, out string platformName);
@@ -414,10 +416,11 @@ namespace IceBuilder
             }
         }
 
-        public static void AddCSharpGeneratedItem(IVsProject project,
-                                                  string projectDir,
-                                                  string path,
-                                                  string generatedpath)
+        public static void AddCSharpGeneratedItem(
+            IVsProject project,
+            string projectDir,
+            string path,
+            string generatedpath)
         {
             if (TryAddItem(project, Path.Combine(projectDir, generatedpath)))
             {
@@ -443,10 +446,8 @@ namespace IceBuilder
             ThreadHelper.ThrowIfNotOnUIThread();
             var projectDir = project.GetProjectBaseDirectory();
 
-            //
-            // Remove all CompileClCompile and ClInclude items that have an associted SliceCompileSource
-            // item metadata that doesn't much any of the project SliceCompile items
-            //
+            // Remove all Compile, ClCompile and ClInclude items that have an associted SliceCompileSource item
+            // metadata that doesn't match any of the project SliceCompile items.
             if (project.IsCppProject())
             {
                 project.DeleteItems(project.WithProject((MSProject msproject) =>

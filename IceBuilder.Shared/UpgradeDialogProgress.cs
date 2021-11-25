@@ -1,25 +1,18 @@
-// **********************************************************************
-//
 // Copyright (c) ZeroC, Inc. All rights reserved.
-//
-// **********************************************************************
 
 using System;
 using System.Windows.Forms;
 
 namespace IceBuilder
 {
-    public interface UpgradeProgressCallback
+    public interface IUpgradeProgressCallback
     {
-        bool Canceled
-        {
-            get; set;
-        }
+        bool Canceled { get; set; }
         void Finished();
         void ReportProgress(string project, int index);
     }
 
-    public partial class UpgradeDialogProgress : Form, UpgradeProgressCallback
+    public partial class UpgradeDialogProgress : Form, IUpgradeProgressCallback
     {
         public UpgradeDialogProgress(int total)
         {
@@ -62,11 +55,8 @@ namespace IceBuilder
             ProgressBar.Value = index;
         }
 
-        public void Finished()
-        {
-            Close();
-        }
+        public void Finished() => Close();
 
-        private object _lock = new object();
+        private readonly object _lock = new object();
     }
 }

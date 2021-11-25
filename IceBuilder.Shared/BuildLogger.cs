@@ -12,11 +12,10 @@ namespace IceBuilder
 {
     public class BuildLogger : Logger
     {
-        EnvDTE.OutputWindowPane OutputPane
-        {
-            get;
-            set;
-        }
+        private int Indent { get; set; }
+        private int IndentLevel { get; set; }
+        private EnvDTE.OutputWindowPane OutputPane { get; set; }
+        private Stopwatch Stopwatch { get; set; }
 
         public BuildLogger(EnvDTE.OutputWindowPane outputPane)
         {
@@ -64,16 +63,13 @@ namespace IceBuilder
             Indent += IndentLevel;
         }
 
-        public void EventSource_TargetFinished(object sender, TargetFinishedEventArgs e)
-        {
-            Indent -= IndentLevel;
-        }
+        public void EventSource_TargetFinished(object sender, TargetFinishedEventArgs e) => Indent -= IndentLevel;
 
         public void EventSource_MessageRaised(object sender, BuildMessageEventArgs e)
         {
             if ((e.Importance == MessageImportance.High && IsVerbosityAtLeast(LoggerVerbosity.Minimal)) ||
-               (e.Importance == MessageImportance.Normal && IsVerbosityAtLeast(LoggerVerbosity.Normal)) ||
-               (e.Importance == MessageImportance.Low && IsVerbosityAtLeast(LoggerVerbosity.Detailed)))
+                (e.Importance == MessageImportance.Normal && IsVerbosityAtLeast(LoggerVerbosity.Normal)) ||
+                (e.Importance == MessageImportance.Low && IsVerbosityAtLeast(LoggerVerbosity.Detailed)))
             {
                 WriteMessage(e.Message);
             }
@@ -147,24 +143,6 @@ namespace IceBuilder
 
         public override void Shutdown()
         {
-        }
-
-        private Stopwatch Stopwatch
-        {
-            get;
-            set;
-        }
-
-        private int Indent
-        {
-            get;
-            set;
-        }
-
-        private int IndentLevel
-        {
-            get;
-            set;
         }
     }
 }

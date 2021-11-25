@@ -14,12 +14,17 @@ namespace IceBuilder
 {
     public class Builder
     {
-        public Builder(IVsBuildManagerAccessor2 accessor)
-        {
-            BuildManagerAccessor = accessor;
-        }
+        private ManualResetEvent BuildAvailableEvent { get; set; }
+        private IVsBuildManagerAccessor2 BuildManagerAccessor { get; set; }
 
-        public bool Build(IVsProject project, BuildCallback buildCallback, BuildLogger buildLogger, string platform, string configuration)
+        public Builder(IVsBuildManagerAccessor2 accessor) => BuildManagerAccessor = accessor;
+
+        public bool Build(
+            IVsProject project,
+            BuildCallback buildCallback,
+            BuildLogger buildLogger,
+            string platform,
+            string configuration)
         {
             return project.WithProject((MSBuildProject msproject) =>
                 {
@@ -30,8 +35,10 @@ namespace IceBuilder
                     msproject.ProjectCollection.Loggers.Add(buildLogger);
                     msproject.ProjectCollection.OnlyLogCriticalEvents = false;
 
-                    int err = BuildManagerAccessor.AcquireBuildResources(VSBUILDMANAGERRESOURCE.VSBUILDMANAGERRESOURCE_DESIGNTIME |
-                                                                         VSBUILDMANAGERRESOURCE.VSBUILDMANAGERRESOURCE_UITHREAD, out uint cookie);
+                    int err = BuildManagerAccessor.AcquireBuildResources(
+                        VSBUILDMANAGERRESOURCE.VSBUILDMANAGERRESOURCE_DESIGNTIME |
+                        VSBUILDMANAGERRESOURCE.VSBUILDMANAGERRESOURCE_UITHREAD,
+                        out uint cookie);
 
                     if (err != VSConstants.E_PENDING && err != VSConstants.S_OK)
                     {
@@ -106,22 +113,13 @@ namespace IceBuilder
                     }
                 }, true);
         }
-
-        private ManualResetEvent BuildAvailableEvent
-        {
-            get;
-            set;
-        }
-
-        private IVsBuildManagerAccessor2 BuildManagerAccessor
-        {
-            get;
-            set;
-        }
     }
 
     public class BuildCallback
     {
+        private readonly IVsProject _project;
+        private readonly EnvDTE.OutputWindowPane _outputPane;
+
         public BuildCallback(IVsProject project, EnvDTE.OutputWindowPane outputPane)
         {
             _project = project;
@@ -143,8 +141,5 @@ namespace IceBuilder
                 string.Format("------ Build {0} ------\n\n", succeed ? "succeeded" : "failed"));
             Package.Instance.BuildDone();
         }
-
-        private readonly IVsProject _project;
-        private readonly EnvDTE.OutputWindowPane _outputPane;
     }
 }

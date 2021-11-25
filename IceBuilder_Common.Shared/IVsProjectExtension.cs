@@ -12,10 +12,8 @@ namespace IceBuilder
 {
     public static class IVsProjectExtension
     {
-        public static void EnsureIsCheckout(this IVsProject project)
-        {
+        public static void EnsureIsCheckout(this IVsProject project) =>
             EnsureIsCheckout(project.GetDTEProject(), project.GetProjectFullPath());
-        }
 
         private static void EnsureIsCheckout(EnvDTE.Project project, string path)
         {
@@ -40,18 +38,14 @@ namespace IceBuilder
             return dteproject;
         }
 
-        public static List<string> GetIceBuilderItems(this IVsProject project)
-        {
-            return project.WithProject((MSProject msproject) =>
+        public static List<string> GetIceBuilderItems(this IVsProject project) =>
+            project.WithProject((MSProject msproject) =>
                 msproject.Items.Where(item => item.ItemType.Equals("SliceCompile"))
                                .Select(item => item.EvaluatedInclude)
                                .ToList());
-        }
 
-        public static MSProject GetMSBuildProject(this IVsProject project)
-        {
-            return MSProjectExtension.LoadedProject(project.GetProjectFullPath());
-        }
+        public static MSProject GetMSBuildProject(this IVsProject project) =>
+            MSProjectExtension.LoadedProject(project.GetProjectFullPath());
 
         public static string GetProjectBaseDirectory(this IVsProject project)
         {
@@ -72,9 +66,7 @@ namespace IceBuilder
             }
         }
 
-        //
         // Get the Guid that idenifies the type of the project
-        //
         public static Guid GetProjecTypeGuid(this IVsProject project)
         {
             if (project is IVsHierarchy hierarchy)
@@ -108,9 +100,7 @@ namespace IceBuilder
             var type = project.GetProjecTypeGuid();
             if (type.Equals(cppProjectGUID) || type.Equals(cppStoreAppProjectGUID) || type.Equals(csharpProjectGUID))
             {
-                //
                 // Find the full path of MSBuild Ice Builder props and target files and check they exists
-                //
                 var props = project.WithProject((MSProject msproject) =>
                     {
                         return msproject.Imports.Where(
@@ -147,32 +137,41 @@ namespace IceBuilder
                 });
         }
 
-        public static void UpdateProject(this IVsProject project, Action<MSProject> action, bool switchToMainThread = false)
-        {
+        public static void UpdateProject(
+            this IVsProject project,
+            Action<MSProject> action,
+            bool switchToMainThread = false) =>
             ProjectFactoryHelperInstance.ProjectHelper.UpdateProject(project, action, switchToMainThread);
-        }
 
-        public static T WithProject<T>(this IVsProject project, Func<MSProject, T> func, bool switchToMainThread = false)
-        {
-            return ProjectFactoryHelperInstance.ProjectHelper.WithProject(project, func, switchToMainThread);
-        }
+        public static T WithProject<T>(
+            this IVsProject project,
+            Func<MSProject, T> func,
+            bool switchToMainThread = false) =>
+            ProjectFactoryHelperInstance.ProjectHelper.WithProject(project, func, switchToMainThread);
 
-        public static IDisposable OnProjectUpdate(this IVsProject project, Action onProjectUpdate)
-        {
-            return ProjectFactoryHelperInstance.ProjectHelper.OnProjectUpdate(project, onProjectUpdate);
-        }
+        public static IDisposable OnProjectUpdate(this IVsProject project, Action onProjectUpdate) =>
+            ProjectFactoryHelperInstance.ProjectHelper.OnProjectUpdate(project, onProjectUpdate);
 
-        public static string GetItemMetadata(this IVsProject project, string identity, string name, string defaultValue = "")
-        {
-            return ProjectFactoryHelperInstance.ProjectHelper.GetItemMetadata(project, identity, name, defaultValue);
-        }
+        public static string GetItemMetadata(
+            this IVsProject project,
+            string identity,
+            string name,
+            string defaultValue = "") =>
+            ProjectFactoryHelperInstance.ProjectHelper.GetItemMetadata(project, identity, name, defaultValue);
 
-        public static string GetDefaultItemMetadata(this IVsProject project, string name, bool evaluated, string defaultValue = "")
-        {
-            return ProjectFactoryHelperInstance.ProjectHelper.GetDefaultItemMetadata(project, name, evaluated, defaultValue);
-        }
+        public static string GetDefaultItemMetadata(
+            this IVsProject project,
+            string name,
+            bool evaluated,
+            string defaultValue = "") =>
+            ProjectFactoryHelperInstance.ProjectHelper.GetDefaultItemMetadata(project, name, evaluated, defaultValue);
 
-        public static void SetItemMetadata(this IVsProject project, string itemType, string label, string name, string value)
+        public static void SetItemMetadata(
+            this IVsProject project,
+            string itemType,
+            string label,
+            string name,
+            string value)
         {
             project.EnsureIsCheckout();
             ProjectFactoryHelperInstance.ProjectHelper.SetItemMetadata(project, itemType, label, name, value);
@@ -184,16 +183,12 @@ namespace IceBuilder
             ProjectFactoryHelperInstance.ProjectHelper.SetItemMetadata(project, name, value);
         }
 
-        public static bool HasProjectFlavor(this IVsProject project, string flavor)
-        {
-            return project.WithProject((MSProject msproject) => msproject.HasProjectFlavor(flavor), true);
-        }
+        public static bool HasProjectFlavor(this IVsProject project, string flavor) =>
+            project.WithProject((MSProject msproject) => msproject.HasProjectFlavor(flavor), true);
 
-        public static void AddProjectFlavorIfNotExists(this IVsProject project, string flavor)
-        {
+        public static void AddProjectFlavorIfNotExists(this IVsProject project, string flavor) =>
             ProjectFactoryHelperInstance.ProjectHelper.UpdateProject(project,
                 (MSProject msproject) => msproject.AddProjectFlavorIfNotExists(flavor), true);
-        }
 
         public static void RemoveGeneratedItemCustomMetadata(this IVsProject project, List<string> paths)
         {
@@ -201,36 +196,35 @@ namespace IceBuilder
             ProjectFactoryHelperInstance.ProjectHelper.RemoveGeneratedItemCustomMetadata(project, paths);
         }
 
-        public static void SetGeneratedItemCustomMetadata(this IVsProject project, string slice, string generated,
-                                                          List<string> excludedConfigurations = null)
+        public static void SetGeneratedItemCustomMetadata(
+            this IVsProject project,
+            string slice,
+            string generated,
+            List<string> excludedConfigurations = null)
         {
             project.EnsureIsCheckout();
-            ProjectFactoryHelperInstance.ProjectHelper.SetGeneratedItemCustomMetadata(project, slice, generated, excludedConfigurations);
+            ProjectFactoryHelperInstance.ProjectHelper.SetGeneratedItemCustomMetadata(
+                project,
+                slice,
+                generated,
+                excludedConfigurations);
         }
 
-        public static string GetEvaluatedProperty(this IVsProject project, string name)
-        {
-            return project.GetEvaluatedProperty(name, string.Empty);
-        }
+        public static string GetEvaluatedProperty(this IVsProject project, string name) =>
+            project.GetEvaluatedProperty(name, string.Empty);
 
-        public static string GetProperty(this IVsProject project, string name)
-        {
-            return project.WithProject((MSProject msproject) => msproject.GetProperty(name, true));
-        }
+        public static string GetProperty(this IVsProject project, string name) =>
+            project.WithProject((MSProject msproject) => msproject.GetProperty(name, true));
 
-        public static string GetPropertyWithDefault(this IVsProject project, string name, string defaultValue)
-        {
-            return project.WithProject((MSProject msproject) => msproject.GetPropertyWithDefault(name, defaultValue));
-        }
+        public static string GetPropertyWithDefault(this IVsProject project, string name, string defaultValue) =>
+            project.WithProject((MSProject msproject) => msproject.GetPropertyWithDefault(name, defaultValue));
 
-        public static string GetEvaluatedProperty(this IVsProject project, string name, string defaultValue)
-        {
-            return project.WithProject((MSProject msproject) =>
+        public static string GetEvaluatedProperty(this IVsProject project, string name, string defaultValue) =>
+            project.WithProject((MSProject msproject) =>
             {
                 var value = msproject.GetEvaluatedProperty(name);
                 return string.IsNullOrEmpty(value) ? defaultValue : value;
             });
-        }
 
         public static EnvDTE.ProjectItem GetProjectItem(this IVsProject project, uint item)
         {
@@ -303,10 +297,8 @@ namespace IceBuilder
             }
         }
 
-        public static void RemoveGeneratedItemDuplicates(this IVsProject project)
-        {
+        public static void RemoveGeneratedItemDuplicates(this IVsProject project) =>
             ProjectFactoryHelperInstance.ProjectHelper.RemoveGeneratedItemDuplicates(project);
-        }
 
         public static readonly Guid cppProjectGUID =
            new Guid("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}");

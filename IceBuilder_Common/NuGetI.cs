@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.ComponentModelHost;
+﻿// Copyright (c) ZeroC, Inc. All rights reserved.
+
+using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using NuGet.VisualStudio;
 
@@ -6,28 +8,12 @@ namespace IceBuilder
 {
     public class NuGetI : INuGet
     {
-        IVsPackageInstallerEvents PackageInstallerEvents
-        {
-            get;
-            set;
-        }
+        IVsPackageInstallerEvents PackageInstallerEvents { get; set; }
 
-        IVsPackageInstallerServices PackageInstallerServices
-        {
-            get;
-            set;
-        }
-        IVsPackageInstaller PackageInstaller
-        {
-            get;
-            set;
-        }
+        IVsPackageInstallerServices PackageInstallerServices { get; set; }
+        IVsPackageInstaller PackageInstaller { get; set; }
 
-        IVsPackageRestorer PackageRestorer
-        {
-            get;
-            set;
-        }
+        IVsPackageRestorer PackageRestorer { get; set; }
 
         NuGetBatchEnd BatchEnd
         {

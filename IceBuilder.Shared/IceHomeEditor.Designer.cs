@@ -1,3 +1,5 @@
+// Copyright (c) ZeroC, Inc. All rights reserved.
+
 namespace IceBuilder
 {
     partial class IceHomeEditor
@@ -54,7 +56,7 @@ namespace IceBuilder
             this.btnIceHome.TabIndex = 50;
             this.btnIceHome.Text = "...";
             this.btnIceHome.UseVisualStyleBackColor = true;
-            this.btnIceHome.Click += new System.EventHandler(this.btnIceHome_Click);
+            this.btnIceHome.Click += new System.EventHandler(this.BtnIceHome_Click);
             //
             // lblInfo
             //

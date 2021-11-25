@@ -45,25 +45,13 @@ namespace IceBuilder
             return 0;
         }
 
-        public int OnAfterLoadProjectBatch(bool fIsBackgroundIdleBatch)
-        {
-            return 0;
-        }
+        public int OnAfterLoadProjectBatch(bool fIsBackgroundIdleBatch) => 0;
 
-        public int OnBeforeBackgroundSolutionLoadBegins()
-        {
-            return 0;
-        }
+        public int OnBeforeBackgroundSolutionLoadBegins() => 0;
 
-        public int OnBeforeLoadProjectBatch(bool fIsBackgroundIdleBatch)
-        {
-            return 0;
-        }
+        public int OnBeforeLoadProjectBatch(bool fIsBackgroundIdleBatch) => 0;
 
-        public int OnBeforeOpenSolution(string pszSolutionFilename)
-        {
-            return 0;
-        }
+        public int OnBeforeOpenSolution(string pszSolutionFilename) => 0;
 
         public int OnQueryBackgroundLoadProjectBatch(out bool pfShouldDelayLoadToNextIdle)
         {
@@ -88,10 +76,7 @@ namespace IceBuilder
             return 0;
         }
 
-        public int OnAfterClosingChildren(IVsHierarchy child)
-        {
-            return 0;
-        }
+        public int OnAfterClosingChildren(IVsHierarchy child) => 0;
 
         public int OnAfterLoadProject(IVsHierarchy hierarchyOld, IVsHierarchy hierarchyNew)
         {
@@ -114,50 +99,15 @@ namespace IceBuilder
             return 0;
         }
 
-        public int OnAfterMergeSolution(object pUnkReserved)
-        {
-            return 0;
-        }
-
-        public int OnAfterOpeningChildren(IVsHierarchy hierarchy)
-        {
-            return 0;
-        }
-
-        public int OnAfterOpenProject(IVsHierarchy hierarchy, int fAdded)
-        {
-            return 0;
-        }
-
-        public int OnAfterOpenSolution(object pUnkReserved, int fNewSolution)
-        {
-            return 0;
-        }
-
-        public int OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
-        {
-            return 0;
-        }
-
-        public int OnBeforeCloseSolution(object pUnkReserved)
-        {
-            return 0;
-        }
-
-        public int OnBeforeClosingChildren(IVsHierarchy pHierarchy)
-        {
-            return 0;
-        }
-
-        public int OnBeforeOpeningChildren(IVsHierarchy pHierarchy)
-        {
-            return 0;
-        }
-
-        public int OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy)
-        {
-            return 0;
-        }
+        public int OnAfterMergeSolution(object pUnkReserved) => 0;
+        public int OnAfterOpeningChildren(IVsHierarchy hierarchy) => 0;
+        public int OnAfterOpenProject(IVsHierarchy hierarchy, int fAdded) => 0;
+        public int OnAfterOpenSolution(object pUnkReserved, int fNewSolution) => 0;
+        public int OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved) => 0;
+        public int OnBeforeCloseSolution(object pUnkReserved) => 0;
+        public int OnBeforeClosingChildren(IVsHierarchy pHierarchy) => 0;
+        public int OnBeforeOpeningChildren(IVsHierarchy pHierarchy) => 0;
+        public int OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy) => 0;
 
         public int OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel)
         {

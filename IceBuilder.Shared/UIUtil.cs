@@ -22,9 +22,7 @@ namespace IceBuilder
                 0);
         }
 
-        //
         // Open the Visual Studio native dialog for selecting a directory
-        //
         public static string BrowserFolderDialog(IntPtr owner, string title, string initialDirectory)
         {
             ThreadHelper.ThrowIfNotOnUIThread();

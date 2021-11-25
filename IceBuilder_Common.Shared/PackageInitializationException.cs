@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2009-2018 ZeroC, Inc. All rights reserved.
+﻿// Copyright (c) ZeroC, Inc. All rights reserved.
 
 using System;
 

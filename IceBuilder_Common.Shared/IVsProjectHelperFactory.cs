@@ -18,22 +18,10 @@ namespace IceBuilder
             ProjectHelper = projectHelper;
         }
 
-        public static IVCUtil VCUtil
-        {
-            get;
-            private set;
-        }
+        public static IVCUtil VCUtil { get; private set; }
 
-        public static INuGet NuGet
-        {
-            get;
-            private set;
-        }
+        public static INuGet NuGet { get; private set; }
 
-        public static IVsProjectHelper ProjectHelper
-        {
-            get;
-            private set;
-        }
+        public static IVsProjectHelper ProjectHelper { get; private set; }
     }
 }

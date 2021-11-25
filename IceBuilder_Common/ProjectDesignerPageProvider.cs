@@ -1,8 +1,4 @@
-﻿// **********************************************************************
-//
-// Copyright (c) ZeroC, Inc. All rights reserved.
-//
-// **********************************************************************
+﻿// Copyright (c) ZeroC, Inc. All rights reserved.
 
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.VS.Properties;
