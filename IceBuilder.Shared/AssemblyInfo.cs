@@ -1,8 +1,4 @@
-// **********************************************************************
-//
 // Copyright (c) ZeroC, Inc. All rights reserved.
-//
-// **********************************************************************
 
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -12,5 +8,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCompany("ZeroC, Inc.")]
 [assembly: AssemblyProduct("Ice Builder")]
 [assembly: AssemblyCopyright("Copyright (c) ZeroC, Inc.")]
-[assembly: AssemblyVersion("6.0.2")]
+[assembly: AssemblyVersion("6.0.3")]
 [assembly: ComVisibleAttribute(false)]
