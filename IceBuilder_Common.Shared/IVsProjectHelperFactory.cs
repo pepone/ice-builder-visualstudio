@@ -4,27 +4,14 @@ namespace IceBuilder
 {
     public interface IVsProjectHelperFactory
     {
-        IVCUtil VCUtil
-        {
-            get;
-        }
-
-        INuGet NuGet
-        {
-            get;
-        }
-
-        IVsProjectHelper ProjectHelper
-        {
-            get;
-        }
+        IVCUtil VCUtil { get; }
+        INuGet NuGet { get; }
+        IVsProjectHelper ProjectHelper { get; }
     }
 
     public class ProjectFactoryHelperInstance
     {
-        public static void Init(IVCUtil vcutil,
-                                INuGet nuget,
-                                IVsProjectHelper projectHelper)
+        public static void Init(IVCUtil vcutil, INuGet nuget, IVsProjectHelper projectHelper)
         {
             VCUtil = vcutil;
             NuGet = nuget;

@@ -35,6 +35,9 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "IceBuilder_Common.Shared", "IceBuilder_Common.Shared\IceBuilder_Common.Shared.shproj", "{449835BC-2889-45FB-BF79-BCC700FB5998}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IceBuilder.Next", "IceBuilder.Next\IceBuilder.Next.csproj", "{A51B4AA4-714B-4E23-A8C1-E0759BF5B609}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C998637F-98DD-45D3-AF85-47D883697E54} = {C998637F-98DD-45D3-AF85-47D883697E54}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IceBuilder_Common.Next", "IceBuilder_Common.Next\IceBuilder_Common.Next.csproj", "{C014D4BF-6EB0-409E-AD9B-5B783450200F}"
 EndProject

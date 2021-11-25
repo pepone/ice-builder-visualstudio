@@ -22,7 +22,7 @@ namespace IceBuilder
     [InstalledProductRegistration("#110", "#112", "6.0.2", IconResourceID = 400)]
     [ProvideOptionPage(typeof(IceOptionsPage), "Projects", "Ice Builder", 113, 0, true)]
     [ProvideAutoLoad(UIContextGuids80.NoSolution, PackageAutoLoadFlags.BackgroundLoad)]
-    [Guid(Package.IceBuilderPackageString)]
+    [Guid(IceBuilderPackageString)]
 
     [ProvideObject(typeof(PropertyPage),
         RegisterUsing = RegistrationMethod.CodeBase)]
@@ -41,7 +41,7 @@ namespace IceBuilder
         null,
         @"..\Templates\Projects")]
 
-    public sealed class Package : Microsoft.VisualStudio.Shell.AsyncPackage
+    public sealed class Package : AsyncPackage
     {
         public static readonly string[] AssemblyNames =
         {
@@ -114,12 +114,6 @@ namespace IceBuilder
         }
 
         public static Package Instance
-        {
-            get;
-            private set;
-        }
-
-        public EnvDTE.DTEEvents DTEEvents
         {
             get;
             private set;
@@ -441,8 +435,7 @@ namespace IceBuilder
             private set;
         }
 
-        protected override async Task InitializeAsync(CancellationToken cancel,
-            IProgress<Microsoft.VisualStudio.Shell.ServiceProgressData> progress)
+        protected override async Task InitializeAsync(CancellationToken cancel, IProgress<ServiceProgressData> progress)
         {
             Instance = this;
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -470,8 +463,6 @@ namespace IceBuilder
                 {
                     throw new PackageInitializationException("Error initializing DTE2");
                 }
-
-                DTEEvents = DTE.Events.DTEEvents;
 
                 IVsSolution = await GetServiceAsync(typeof(SVsSolution)) as IVsSolution;
                 if (IVsSolution == null)
@@ -501,19 +492,20 @@ namespace IceBuilder
                 // Update the InstallDir this was previously used in project imports, but is still usefull if you
                 // need to detect the extension install dir.
                 //
-                Registry.SetValue(IceBuilderKey, string.Format("InstallDir.{0}", DTE.Version), InstallDirectory,
+                string version = DTE2.Version;
+                Registry.SetValue(IceBuilderKey, string.Format("InstallDir.{0}", version), InstallDirectory,
                                   RegistryValueKind.String);
 
                 Assembly assembly = null;
-                if (DTE.Version.StartsWith("14.0"))
+                if (version.StartsWith("14.0"))
                 {
                     assembly = Assembly.LoadFrom(Path.Combine(ResourcesDirectory, "IceBuilder.VS2015.dll"));
                 }
-                else if (DTE.Version.StartsWith("15.0"))
+                else if (version.StartsWith("15.0"))
                 {
                     assembly = Assembly.LoadFrom(Path.Combine(ResourcesDirectory, "IceBuilder.VS2017.dll"));
                 }
-                else if (DTE.Version.StartsWith("16.0"))
+                else if (version.StartsWith("16.0"))
                 {
                     assembly = Assembly.LoadFrom(Path.Combine(ResourcesDirectory, "IceBuilder.VS2019.dll"));
                 }
@@ -521,6 +513,7 @@ namespace IceBuilder
                 {
                     assembly = Assembly.LoadFrom(Path.Combine(ResourcesDirectory, "IceBuilder.VS2022.dll"));
                 }
+
                 var factory = assembly.GetType("IceBuilder.ProjectHelperFactoryI").GetConstructor(new Type[] { }).Invoke(
                     new object[] { }) as IVsProjectHelperFactory;
 
